@@ -1,17 +1,21 @@
 import sys
 import rclpy
-from moveit2 import MoveIt2Interface
+from moveit_py.planning_component import PlanningComponent
+from moveit_py.robot_model_loader import RobotModelLoader
 from geometry_msgs.msg import Pose
 
 def main(args=None):
     rclpy.init(args=args)
-    moveit2 = MoveIt2Interface()
+    
+    # Load the robot model
+    robot_model_loader = RobotModelLoader("robot_description")
+    robot_model = robot_model_loader.get_model()
 
-    # Define the planning group for the xArm6
+    # Initialize the planning component with the group name
     arm_group_name = "xarm6"  # Confirm this is the correct group name in your MoveIt configuration
-    moveit2.setup_group(arm_group_name)
+    planner = PlanningComponent(arm_group_name, robot_model)
 
-    # Set target pose with specific coordinates
+    # Define and set the target pose
     pose_target = Pose()
     pose_target.orientation.x = 0.506
     pose_target.orientation.y = 0.494
@@ -20,14 +24,14 @@ def main(args=None):
     pose_target.position.x = -0.088
     pose_target.position.y = 0.136
     pose_target.position.z = 0.444
-    moveit2.set_pose_target(pose_target)
+    planner.set_pose_target(pose_target)
 
     # Plan and execute
-    success = moveit2.go(wait=True)
-    moveit2.stop()
+    plan_success, motion_plan = planner.plan()
+    if plan_success:
+        planner.execute(motion_plan)
 
     # Clean up
-    moveit2.dispose()
     rclpy.shutdown()
 
 if __name__ == '__main__':
