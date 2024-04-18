@@ -1,48 +1,34 @@
 import sys
-import copy
-import moveit_commander
-import moveit_msgs.msg
-import geometry_msgs.msg
-import rospy
+import rclpy
+from moveit2 import MoveIt2Interface
+from geometry_msgs.msg import Pose
 
-def move_to_position(x, y, z):
-    moveit_commander.roscpp_initialize(sys.argv)
-    rospy.init_node('move_group_python_interface', anonymous=True)
+def main(args=None):
+    rclpy.init(args=args)
+    moveit2 = MoveIt2Interface()
 
-    # Instantiate a RobotCommander object
-    robot = moveit_commander.RobotCommander()
+    # Define the planning group for the xArm6
+    arm_group_name = "xarm6"  # Confirm this is the correct group name in your MoveIt configuration
+    moveit2.setup_group(arm_group_name)
 
-    # Instantiate a PlanningSceneInterface object
-    scene = moveit_commander.PlanningSceneInterface()
-
-    # Instantiate a MoveGroupCommander object, which is an interface to one group of joints
-    group = moveit_commander.MoveGroupCommander("xarm6")
-
-    # Create a PoseStamped message with the desired position and orientation
-    pose_target = geometry_msgs.msg.Pose()
+    # Set target pose with specific coordinates
+    pose_target = Pose()
     pose_target.orientation.x = 0.506
     pose_target.orientation.y = 0.494
     pose_target.orientation.z = 0.502
     pose_target.orientation.w = -0.498
-    pose_target.position.x = x
-    pose_target.position.y = y
-    pose_target.position.z = z
+    pose_target.position.x = -0.088
+    pose_target.position.y = 0.136
+    pose_target.position.z = 0.444
+    moveit2.set_pose_target(pose_target)
 
-    # Set the target pose
-    group.set_pose_target(pose_target)
+    # Plan and execute
+    success = moveit2.go(wait=True)
+    moveit2.stop()
 
-    # Plan and execute the motion
-    plan = group.plan()
-    group.go(wait=True)
+    # Clean up
+    moveit2.dispose()
+    rclpy.shutdown()
 
-    # Calling `stop()` ensures that there is no residual movement
-    group.stop()
-    group.clear_pose_targets()
-
-    # Shutdown MoveIt cleanly
-    moveit_commander.roscpp_shutdown()
-
-# Example usage
 if __name__ == '__main__':
-    # Coordinates for the desired position
-    move_to_position(-0.088, 0.136, 0.444)
+    main(sys.argv)
