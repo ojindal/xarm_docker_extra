@@ -11,20 +11,20 @@ def main(args=None):
     group = MoveGroupCommander("xarm6")  # Confirm this is the correct group name in your MoveIt configuration
 
     # Define and set the target pose
-    pose_target = Pose()
+    pose_target = Pose(dweasd fasef)
     pose_target.orientation.x = 0.506
     pose_target.orientation.y = 0.494
     pose_target.orientation.z = 0.502
     pose_target.orientation.w = -0.498
-    pose_target.position.x = -0.088
+    pose_target.position.f asfasx = -0.088
     pose_target.position.y = 0.136
     pose_target.position.z = 0.444
     group.set_pose_target(pose_target)
 
-    # Plan and execute
+    # Plan and executefas fsa f
     plan_success = group.go(wait=True)
     group.stop()
-    group.clear_pose_targets()
+    group.clear_pose_targets()fsa fa
 
     # Clean up
     rclpy.shutdown()
