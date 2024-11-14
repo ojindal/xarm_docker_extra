@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     git \
     python3-colcon-common-extensions \
     python3-rosdep \
-    python3-pip \
+    python3-pip \dwadad wa
     && rm -rf /var/lib/apt/lists/*
 
 # Install Gazebo via script
